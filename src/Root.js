@@ -25,6 +25,8 @@ const store = createStore(reducers, compose(
 
 export default class Root extends Component {
     render() {
+        console.log('Root');
+
         return (
             <Provider store={store}>
                 <View style={[{ height: Platform.OS === 'ios' ? 20 : StatusBar.currentHeight }, styles.bgSecondary]}>

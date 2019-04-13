@@ -4,7 +4,7 @@ import { Container, Content, Icon, Left, List, ListItem, Right, Text, Title, Vie
 
 import styles, { colors } from '../styles';
 
-export default class SideBar extends Component {
+export default class Drawer extends Component {
     render() {
         const { activeItemKey, navigation } = this.props;
 

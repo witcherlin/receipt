@@ -5,7 +5,20 @@ import { connect } from 'react-redux';
 
 import Share from 'react-native-share';
 
-import { ActionSheet, Body, Button, Content, Icon, ListItem, Right, Text, Title, Toast, View } from 'native-base';
+import {
+    ActionSheet,
+    Body,
+    Button,
+    Content,
+    Icon,
+    ListItem,
+    Right,
+    Spinner,
+    Text,
+    Title,
+    Toast,
+    View,
+} from 'native-base';
 
 import { loadReceipts, removeReceipt } from '../../actions/receipts';
 
@@ -58,9 +71,9 @@ class ListScreen extends Component {
     }
 
     render() {
-        const { navigation, receipts } = this.props;
+        const { navigation, loading, receipts } = this.props;
 
-        console.log(receipts);
+        console.log('ListScreen:', loading, receipts);
 
         return (
             <>
@@ -77,54 +90,63 @@ class ListScreen extends Component {
                 </View>
 
                 <Content>
-                    <List
-                        rightValue={-100}
-                        data={receipts.sort((a, b) => (b.createdAt - a.createdAt))}
-                        body={receipt => (
-                            <ListItem
-                                style={[
-                                    styles.m0,
-                                    styles.pr3,
-                                    {
-                                        height: 50,
-                                        borderBottomWidth: 1,
-                                        borderBottomColor: colors.gray,
-                                    },
-                                ]}
-                                button
-                                onPress={() => navigation.navigate('Detail', { receipt })}
-                            >
-                                <Body>
-                                    <Text>{receipt.title}</Text>
-                                </Body>
-                                <Right>
-                                    <Text style={styles.textRight} note>
-                                        {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
-                                    </Text>
-                                </Right>
-                            </ListItem>
-                        )}
-                        right={receipt => (
-                            <View style={[styles.flex1, { flexDirection: 'row', backgroundColor: '#1e1e1e' }]}>
-                                <Button
-                                    style={[styles.flex1, { height: 'auto' }]}
-                                    full
-                                    primary
-                                    onPress={() => this.handleShare(receipt)}
-                                >
-                                    <Icon name="share"/>
-                                </Button>
-                                <Button
-                                    style={[styles.flex1, { height: 'auto' }]}
-                                    full
-                                    danger
-                                    onPress={() => this.handleRemove(receipt)}
-                                >
-                                    <Icon name="trash"/>
-                                </Button>
+                    {loading
+                        ? (
+                            <View style={[styles.flex1, styles.pt4]}>
+                                <Spinner color={colors.primary}/>
                             </View>
-                        )}
-                    />
+                        )
+                        : (
+                            <List
+                                rightValue={-100}
+                                data={receipts.sort((a, b) => (b.createdAt - a.createdAt))}
+                                body={receipt => (
+                                    <ListItem
+                                        style={[
+                                            styles.m0,
+                                            styles.pr3,
+                                            {
+                                                height: 50,
+                                                borderBottomWidth: 1,
+                                                borderBottomColor: colors.gray,
+                                            },
+                                        ]}
+                                        button
+                                        onPress={() => navigation.navigate('Detail', { receipt })}
+                                    >
+                                        <Body>
+                                            <Text>{receipt.title}</Text>
+                                        </Body>
+                                        <Right>
+                                            <Text style={styles.textRight} note>
+                                                {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
+                                            </Text>
+                                        </Right>
+                                    </ListItem>
+                                )}
+                                right={receipt => (
+                                    <View style={[styles.flex1, { flexDirection: 'row', backgroundColor: '#1e1e1e' }]}>
+                                        <Button
+                                            style={[styles.flex1, { height: 'auto' }]}
+                                            full
+                                            primary
+                                            onPress={() => this.handleShare(receipt)}
+                                        >
+                                            <Icon name="share"/>
+                                        </Button>
+                                        <Button
+                                            style={[styles.flex1, { height: 'auto' }]}
+                                            full
+                                            danger
+                                            onPress={() => this.handleRemove(receipt)}
+                                        >
+                                            <Icon name="trash"/>
+                                        </Button>
+                                    </View>
+                                )}
+                            />
+                        )
+                    }
                 </Content>
             </>
         );
@@ -133,6 +155,7 @@ class ListScreen extends Component {
 
 export default connect(
     state => ({
-        receipts: state.receipts,
+        loading: state.receipts.loading,
+        receipts: state.receipts.receipts,
     }),
 )(ListScreen);

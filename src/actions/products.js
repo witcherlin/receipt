@@ -2,28 +2,39 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import uniqid from '../utils/uniqid';
 
-import { setError, setSpinner } from './common';
+import { setError } from './common';
 
-export const LOAD_PRODUCTS = '@@products/LOAD_PRODUCTS';
+export const SET_LOADING = '@@products/SET_LOADING';
+export const SET_PRODUCTS = '@@products/SET_PRODUCTS';
 export const RESET_PRODUCTS = '@@products/RESET_PRODUCTS';
-export const REFRESH_PRODUCTS = '@@products/REFRESH_PRODUCTS';
 export const ADD_PRODUCT = '@@products/ADD_PRODUCT';
 export const UPDATE_PRODUCT = '@@products/UPDATE_PRODUCT';
 export const REMOVE_PRODUCT = '@@products/REMOVE_PRODUCT';
 
+export function setLoading(value) {
+    return {
+        type: SET_LOADING,
+        payload: value,
+    };
+}
+
+export function setProducts(products) {
+    return {
+        type: SET_PRODUCTS,
+        payload: products,
+    };
+}
+
 export function loadProducts() {
     return async (dispatch) => {
-        await dispatch(setSpinner(true));
+        await dispatch(setLoading(true));
 
         try {
             const products = await AsyncStorage.getItem('@receipt/products');
 
-            await dispatch({
-                type: LOAD_PRODUCTS,
-                payload: JSON.parse(products) || [],
-            });
+            dispatch(setProducts(JSON.parse(products) || []));
 
-            setTimeout(() => dispatch(setSpinner(false)), 250);
+            setTimeout(() => dispatch(setLoading(false)), 500);
         } catch (err) {
             await dispatch(setError(err));
         }
@@ -42,24 +53,11 @@ export function saveProducts() {
     };
 }
 
-export function resetProducts() {
+export function resetProducts(column = false, value = '') {
     return async (dispatch) => {
         await dispatch({
             type: RESET_PRODUCTS,
-        });
-
-        await dispatch(saveProducts());
-    };
-}
-
-export function refreshProducts(column = false, value = '') {
-    return async (dispatch) => {
-        await dispatch({
-            type: REFRESH_PRODUCTS,
-            payload: column ? {
-                column,
-                value,
-            } : null,
+            payload: column ? { column, value } : null,
         });
 
         await dispatch(saveProducts());
@@ -76,6 +74,7 @@ export function addProduct(data = {}) {
                 price: 0,
                 ...data,
                 id: uniqid(),
+                createdAt: Date.now(),
             },
         });
 

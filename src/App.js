@@ -6,7 +6,7 @@ import { Container, Content, Root, Spinner, Text, Title, View } from 'native-bas
 
 import { setLoading } from './actions/common';
 
-import Drawer from './components/Drawer';
+import Drawer from './containers/Drawer';
 
 import HomeScreen from './screens/HomeScreen';
 import ListScreen from './screens/receipt/ListScreen';
@@ -32,7 +32,7 @@ const MainNavigator = createDrawerNavigator(
     },
     {
         drawerType: 'slide',
-        initialRouteName: 'Receipt',
+        initialRouteName: 'Home',
         contentComponent: props => <Drawer {...props} />,
     },
 );
@@ -43,11 +43,13 @@ class App extends Component {
     componentWillMount() {
         const { dispatch } = this.props;
 
-        setTimeout(() => dispatch(setLoading(false)), 500);
+        setTimeout(() => dispatch(setLoading(false)), 350);
     }
 
     render() {
         const { common } = this.props;
+
+        console.log('App:', common);
 
         if (common.error) {
             return (

@@ -2,27 +2,39 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import uniqid from '../utils/uniqid';
 
-import { setError, setSpinner } from './common';
+import { setError } from './common';
 
-export const LOAD_RECEIPTS = '@@receipts/LOAD_RECEIPTS';
+export const SET_LOADING = '@@receipts/SET_LOADING';
+export const SET_RECEIPTS = '@@receipts/SET_RECEIPTS';
 export const RESET_RECEIPTS = '@@receipts/RESET_RECEIPTS';
 export const ADD_RECEIPT = '@@receipts/ADD_RECEIPT';
 export const UPDATE_RECEIPT = '@@receipts/UPDATE_RECEIPT';
 export const REMOVE_RECEIPT = '@@receipts/REMOVE_RECEIPT';
 
+export function setLoading(value) {
+    return {
+        type: SET_LOADING,
+        payload: value,
+    };
+}
+
+export function setReceipts(receipts) {
+    return {
+        type: SET_RECEIPTS,
+        payload: receipts,
+    };
+}
+
 export function loadReceipts() {
     return async (dispatch) => {
-        await dispatch(setSpinner(true));
+        await dispatch(setLoading(true));
 
         try {
             const receipts = await AsyncStorage.getItem('@receipt/receipts');
 
-            await dispatch({
-                type: LOAD_RECEIPTS,
-                payload: JSON.parse(receipts) || [],
-            });
+            dispatch(setReceipts(JSON.parse(receipts) || []));
 
-            setTimeout(() => dispatch(setSpinner(false)), 1250);
+            setTimeout(() => dispatch(setLoading(false)), 500);
         } catch (err) {
             await dispatch(setError(err));
         }
@@ -41,22 +53,23 @@ export function saveReceipts() {
     };
 }
 
-export function resetReceipts() {
+export function resetReceipts(column = false, value = '') {
     return async (dispatch) => {
         await dispatch({
             type: RESET_RECEIPTS,
+            payload: column ? { column, value } : null,
         });
 
         await dispatch(saveReceipts());
     };
 }
 
-export function addReceipt(receipt) {
+export function addReceipt(data = {}) {
     return async (dispatch) => {
         await dispatch({
             type: ADD_RECEIPT,
             payload: {
-                ...receipt,
+                ...data,
                 id: uniqid(),
                 createdAt: Date.now(),
             },

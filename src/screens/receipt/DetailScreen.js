@@ -11,7 +11,7 @@ export default class DetailScreen extends Component {
         const { navigation } = this.props;
         const { receipt } = navigation.state.params;
 
-        console.log(navigation, receipt);
+        console.log('DetailScreen:', navigation, receipt);
 
         return (
             <>
