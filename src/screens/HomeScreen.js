@@ -146,25 +146,26 @@ class HomeScreen extends Component {
                     animationIn="fadeIn"
                     animationOut="fadeOut"
                     avoidKeyboard
+                    useNativeDriver
                     isVisible={modalType === 'save'}
                     onBackButtonPress={() => this.handleClose()}
                     onBackdropPress={() => this.handleClose()}
                 >
-                    <View style={[styles.p3, styles.bgWhite, { borderRadius: 5 }]}>
-                        <Title style={[styles.mb2, styles.dark]}>Сохранить квитанцию?</Title>
+                    <View style={[styles.mx5, styles.p3, styles.bgWhite, { borderRadius: 5 }]}>
+                        <Title style={[styles.mb2, styles.textLeft, styles.dark]}>
+                            Сохранить квитанцию?
+                        </Title>
 
-                        <View style={[styles.mb3]}>
-                            <Input
-                                style={{ fontSize: 16, borderBottomWidth: 1, borderBottomColor: colors.gray }}
-                                textAlign="center"
-                                disableFullscreenUI
-                                selectTextOnFocus
-                                onChangeText={text => this.setState({ modalInputTitle: text })}
-                                value={modalInputTitle}
-                            />
-                        </View>
+                        <Input
+                            style={[styles.mb4, { fontSize: 16, borderBottomWidth: 1, borderBottomColor: colors.gray }]}
+                            disableFullscreenUI
+                            selectTextOnFocus
+                            autoFocus
+                            onChangeText={text => this.setState({ modalInputTitle: text })}
+                            value={modalInputTitle}
+                        />
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
                             <Button
                                 style={styles.mx1}
                                 transparent
@@ -184,22 +185,11 @@ class HomeScreen extends Component {
                 </Modal>
 
                 <Content>
-                    <View style={[
-                        styles.bgPrimary,
-                        { height: 42, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-                    ]}>
-                        <View style={styles.flex2}>
-                            <Title style={styles.white}>Название</Title>
-                        </View>
-                        <View style={styles.flex2}>
-                            <Title style={styles.white}>Кол.</Title>
-                        </View>
-                        <View style={styles.flex1}>
-                            <Title style={styles.white}>Цена</Title>
-                        </View>
-                        <View style={styles.flex2}>
-                            <Title style={styles.white}>Сумма</Title>
-                        </View>
+                    <View style={[styles.bgPrimary, { height: 42, flexDirection: 'row', alignItems: 'center' }]}>
+                        <Title style={[styles.flex2, styles.white]}>Название</Title>
+                        <Title style={[styles.flex2, styles.white]}>Кол.</Title>
+                        <Title style={[styles.flex1, styles.white]}>Цена</Title>
+                        <Title style={[styles.flex2, styles.white]}>Сумма</Title>
                     </View>
 
                     {loading
@@ -224,7 +214,7 @@ class HomeScreen extends Component {
                                     ]}>
                                         <View style={[styles.flex2, { borderRightWidth: 1, borderColor: colors.gray }]}>
                                             <Input
-                                                style={{ fontSize: 16 }}
+                                                style={{ height: 50, fontSize: 16 }}
                                                 textAlign="center"
                                                 disableFullscreenUI
                                                 selectTextOnFocus
@@ -238,7 +228,7 @@ class HomeScreen extends Component {
                                             { borderRightWidth: 1, borderColor: colors.gray },
                                         ]}>
                                             <Input
-                                                style={{ fontSize: 16 }}
+                                                style={{ height: 49, fontSize: 16 }}
                                                 keyboardType="decimal-pad"
                                                 textAlign="center"
                                                 disableFullscreenUI
@@ -249,7 +239,7 @@ class HomeScreen extends Component {
                                         </View>
                                         <View style={[styles.flex1, { borderRightWidth: 1, borderColor: colors.gray }]}>
                                             <Input
-                                                style={{ fontSize: 16 }}
+                                                style={{ height: 50, fontSize: 16 }}
                                                 keyboardType="decimal-pad"
                                                 textAlign="center"
                                                 disableFullscreenUI
@@ -258,8 +248,8 @@ class HomeScreen extends Component {
                                                 value={product.price.toString()}
                                             />
                                         </View>
-                                        <View style={[styles.flex2, { borderColor: colors.gray }]}>
-                                            <Text style={[styles.fontBold, { alignSelf: 'center', fontSize: 16 }]}>
+                                        <View style={[styles.flex2, { alignItems: 'center' }]}>
+                                            <Text style={[styles.fontBold, { fontSize: 16 }]}>
                                                 {(product.quantity * product.price).toFixed(2)}
                                             </Text>
                                         </View>

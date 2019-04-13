@@ -15,22 +15,19 @@ export default class DetailScreen extends Component {
 
         return (
             <>
-                <View style={[{ height: 42, flexDirection: 'row', alignItems: 'center' }, styles.bgPrimary]}>
-                    <View style={[styles.flex1]}>
-                        <Button transparent onPress={() => navigation.goBack()}>
-                            <Icon style={styles.white} name="arrow-back"/>
-                        </Button>
-                    </View>
-                    <View style={[styles.flex1]}>
-                        <Title style={[styles.p0, styles.white]}>
-                            #{receipt.id}
-                        </Title>
-                    </View>
-                    <View style={[styles.flex1]}>
-                        <Button transparent>
-                            <Icon style={styles.white} name="share"/>
-                        </Button>
-                    </View>
+                <View style={[
+                    { height: 42, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+                    styles.bgPrimary,
+                ]}>
+                    <Button transparent onPress={() => navigation.goBack()}>
+                        <Icon style={styles.white} name="arrow-back"/>
+                    </Button>
+
+                    <Title style={[styles.p0, styles.white]}>#{receipt.id}</Title>
+
+                    <Button transparent>
+                        <Icon style={styles.white} name="share"/>
+                    </Button>
                 </View>
 
                 <Content padder>

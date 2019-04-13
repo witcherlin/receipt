@@ -81,19 +81,15 @@ class ListScreen extends Component {
                     { height: 42, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
                     styles.bgPrimary,
                 ]}>
-                    <View style={[styles.flex1]}>
-                        <Button transparent onPress={() => navigation.openDrawer()}>
-                            <Icon style={styles.white} name="menu"/>
-                        </Button>
-                    </View>
-                    <View style={[styles.flex1]}>
-                        <Title style={[styles.p0, styles.white]}>Квитанции</Title>
-                    </View>
-                    <View style={[styles.flex1]}>
-                        <Button transparent>
-                            <Icon style={styles.white} name="share"/>
-                        </Button>
-                    </View>
+                    <Button transparent onPress={() => navigation.openDrawer()}>
+                        <Icon style={styles.white} name="menu"/>
+                    </Button>
+
+                    <Title style={[styles.p0, styles.white]}>Квитанции</Title>
+
+                    <Button transparent>
+                        <Icon style={styles.white} name="share"/>
+                    </Button>
                 </View>
 
                 <Content>

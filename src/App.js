@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createAppContainer, createDrawerNavigator, createStackNavigator } from 'react-navigation';
 
-import { Container, Content, Root, Spinner, Text, Title, View } from 'native-base';
-
-import { setLoading } from './actions/common';
+import { Container, Content, Root, Text, Title, View } from 'native-base';
 
 import Drawer from './containers/Drawer';
 
@@ -12,7 +10,7 @@ import HomeScreen from './screens/HomeScreen';
 import ListScreen from './screens/receipt/ListScreen';
 import DetailScreen from './screens/receipt/DetailScreen';
 
-import styles, { colors } from './styles';
+import styles from './styles';
 
 const MainNavigator = createDrawerNavigator(
     {
@@ -40,16 +38,8 @@ const MainNavigator = createDrawerNavigator(
 const AppContainer = createAppContainer(MainNavigator);
 
 class App extends Component {
-    componentWillMount() {
-        const { dispatch } = this.props;
-
-        setTimeout(() => dispatch(setLoading(false)), 350);
-    }
-
     render() {
         const { common } = this.props;
-
-        console.log('App:', common);
 
         if (common.error) {
             return (
@@ -69,12 +59,6 @@ class App extends Component {
         return (
             <Root>
                 <Container>
-                    {common.loading && (
-                        <View style={styles.overlay}>
-                            <Spinner color={colors.primary}/>
-                        </View>
-                    )}
-
                     <AppContainer/>
                 </Container>
             </Root>
