@@ -1,9 +1,9 @@
-export const SET_SPINNER = '@@common/SET_SPINNER';
+export const SET_LOADING = '@@common/SET_LOADING';
 export const SET_ERROR = '@@common/SET_ERROR';
 
-export function setSpinner(value) {
+export function setLoading(value) {
     return {
-        type: SET_SPINNER,
+        type: SET_LOADING,
         payload: value,
     };
 }

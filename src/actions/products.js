@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
+import uniqid from '../utils/uniqid';
+
 import { setError, setSpinner } from './common';
 
 export const LOAD_PRODUCTS = '@@products/LOAD_PRODUCTS';
@@ -64,15 +66,16 @@ export function refreshProducts(column = false, value = '') {
     };
 }
 
-export function addProduct() {
+export function addProduct(data = {}) {
     return async (dispatch) => {
         await dispatch({
             type: ADD_PRODUCT,
             payload: {
-                id: Math.random().toString(16).slice(2) + Date.now().toString(16).slice(2),
                 title: '',
                 quantity: 0,
                 price: 0,
+                ...data,
+                id: uniqid(),
             },
         });
 

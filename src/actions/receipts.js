@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
+import uniqid from '../utils/uniqid';
+
 import { setError, setSpinner } from './common';
 
 export const LOAD_RECEIPTS = '@@receipts/LOAD_RECEIPTS';
@@ -15,14 +17,12 @@ export function loadReceipts() {
         try {
             const receipts = await AsyncStorage.getItem('@receipt/receipts');
 
-            console.log(receipts);
-
             await dispatch({
                 type: LOAD_RECEIPTS,
                 payload: JSON.parse(receipts) || [],
             });
 
-            setTimeout(() => dispatch(setSpinner(false)), 250);
+            setTimeout(() => dispatch(setSpinner(false)), 1250);
         } catch (err) {
             await dispatch(setError(err));
         }
@@ -57,7 +57,7 @@ export function addReceipt(receipt) {
             type: ADD_RECEIPT,
             payload: {
                 ...receipt,
-                id: Math.random().toString(16).slice(2) + Date.now().toString(16).slice(2),
+                id: uniqid(),
                 createdAt: Date.now(),
             },
         });

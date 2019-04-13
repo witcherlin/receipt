@@ -1,39 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { StyleSheet } from 'react-native';
 import Modal from 'react-native-modal';
 
-import { Button, FooterTab, Form, H3, Icon, Input, Item, Label, Text, Toast, View } from 'native-base';
+import { ActionSheet, Button, Form, Icon, Input, Item, Label, Text, Title, Toast, View } from 'native-base';
 
-import { addProduct, refreshProducts } from '../actions/products';
+import { addProduct, refreshProducts, removeProduct } from '../actions/products';
 import { addReceipt } from '../actions/receipts';
 
-const styles = StyleSheet.create({
-    modal: {
-        padding: 14,
-        borderRadius: 4,
-        backgroundColor: '#ffffff',
-    },
-    container: {
-        height: 50,
-        flexDirection: 'row',
-        backgroundColor: '#3f51b5',
-    },
-    icon: {
-        color: '#c6d5ec',
-    },
-    total: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#2d2d2d',
-    },
-    text: {
-        color: '#ffffff',
-        fontWeight: 'bold',
-    },
-});
+import uniqid from '../utils/uniqid';
+
+import styles from '../styles';
 
 class Footer extends Component {
     constructor(props) {
@@ -42,38 +19,45 @@ class Footer extends Component {
         this.state = {
             modalType: false,
             modalInputTitle: '',
-            modalInputIssuedTo: '',
         };
     }
 
     async handleAdd() {
-        await this.props.dispatch(addProduct({
-            id: Math.random().toString(16).slice(2) + Date.now().toString(16).slice(2),
-            title: '',
-            quantity: 0,
-            price: 0,
-        }));
+        const { dispatch } = this.props;
 
-        Toast.show({
-            position: 'bottom',
-            text: 'Товар добавлен',
-            buttonText: 'Закрыть',
-        });
+        ActionSheet.show(
+            {
+                title: 'Добавить товар?',
+                options: ['Добавить', 'Отменить'],
+                destructiveButtonIndex: 0,
+                cancelButtonIndex: 1,
+            },
+            async (buttonIndex) => {
+                if (buttonIndex === 0) {
+                    await dispatch(addProduct());
 
-        this.handleClose();
+                    Toast.show({
+                        position: 'bottom',
+                        text: 'Товар добавлен',
+                        buttonText: 'Закрыть',
+                    });
+                }
+            },
+        );
     }
 
     async handleSave() {
         const { products, dispatch } = this.props;
-        const { modalInputTitle, modalInputIssuedTo } = this.state;
+        const { modalInputTitle } = this.state;
 
-        if (modalInputTitle.length < 3 || modalInputIssuedTo.length < 3 || products.length === 0) {
+        if (modalInputTitle.length < 2 || products.length === 0) {
             return;
         }
 
+        this.handleClose();
+
         await dispatch(addReceipt({
             title: modalInputTitle,
-            issuedTo: modalInputIssuedTo,
             products: [...products],
         }));
 
@@ -82,27 +66,36 @@ class Footer extends Component {
             text: 'Квитанция сохранена',
             buttonText: 'Закрыть',
         });
-
-        this.handleClose();
     }
 
     async handleRefresh() {
-        await this.props.dispatch(refreshProducts('quantity', 0));
+        const { dispatch } = this.props;
 
-        Toast.show({
-            position: 'bottom',
-            text: 'Таблица очищена',
-            buttonText: 'Закрыть',
-        });
+        ActionSheet.show(
+            {
+                title: 'Очистить таблицу?',
+                options: ['Очитстить', 'Отменить'],
+                destructiveButtonIndex: 0,
+                cancelButtonIndex: 1,
+            },
+            async (buttonIndex) => {
+                if (buttonIndex === 0) {
+                    await dispatch(refreshProducts('quantity', 0));
 
-        this.handleClose();
+                    Toast.show({
+                        position: 'bottom',
+                        text: 'Таблица очищена',
+                        buttonText: 'Закрыть',
+                    });
+                }
+            },
+        );
     }
 
     handleClose() {
         this.setState({
             modalType: false,
             modalInputTitle: '',
-            modalInputIssuedTo: '',
         });
     }
 
@@ -111,38 +104,10 @@ class Footer extends Component {
     }
 
     render() {
-        const { modalType, modalInputTitle, modalInputIssuedTo } = this.state;
+        const { modalType, modalInputTitle } = this.state;
 
         return (
             <>
-                <Modal
-                    animationIn="fadeIn"
-                    animationOut="fadeOut"
-                    avoidKeyboard
-                    isVisible={modalType === 'add'}
-                    onBackButtonPress={() => this.handleClose()}
-                    onBackdropPress={() => this.handleClose()}
-                >
-                    <View style={styles.modal}>
-                        <H3>Добавить товар?</H3>
-
-                        <View style={{ marginBottom: 14 }}/>
-
-                        <View style={{
-                            flexDirection: 'row',
-                            alignItems: 'flex-end',
-                            justifyContent: 'flex-end',
-                        }}>
-                            <Button style={{ marginRight: 7 }} transparent onPress={() => this.handleClose()}>
-                                <Text>Отменить</Text>
-                            </Button>
-                            <Button style={{ marginLeft: 7 }} onPress={async () => this.handleAdd()}>
-                                <Text>Добавить</Text>
-                            </Button>
-                        </View>
-                    </View>
-                </Modal>
-
                 <Modal
                     animationIn="fadeIn"
                     animationOut="fadeOut"
@@ -151,83 +116,67 @@ class Footer extends Component {
                     onBackButtonPress={() => this.handleClose()}
                     onBackdropPress={() => this.handleClose()}
                 >
-                    <View style={styles.modal}>
-                        <H3>Сохранить квитанцию?</H3>
+                    <View style={[styles.p3, styles.bgWhite, { borderRadius: 5 }]}>
+                        <Title style={[styles.mb2, styles.dark]}>Сохранить квитанцию?</Title>
 
-                        <Form style={{ marginBottom: 14 }}>
-                            <Item style={{ marginLeft: 0 }} stackedLabel error={modalInputTitle.length < 3}>
+                        <Form style={styles.mb3}>
+                            <Item style={styles.m0} stackedLabel error={modalInputTitle.length < 3}>
                                 <Label>Название</Label>
                                 <Input
                                     onChangeText={text => this.setState({ modalInputTitle: text })}
                                     value={modalInputTitle}
                                 />
                             </Item>
-                            <Item style={{ marginLeft: 0 }} stackedLabel error={modalInputIssuedTo.length < 3}>
-                                <Label>Кому выдана</Label>
-                                <Input
-                                    onChangeText={text => this.setState({ modalInputIssuedTo: text })}
-                                    value={modalInputIssuedTo}
-                                />
-                            </Item>
                         </Form>
 
-                        <View style={{
-                            flexDirection: 'row',
-                            alignItems: 'flex-end',
-                            justifyContent: 'flex-end',
-                        }}>
-                            <Button style={{ marginRight: 7 }} transparent onPress={() => this.handleClose()}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                            <Button
+                                style={styles.mx1}
+                                transparent
+                                onPress={() => this.handleClose()}
+                            >
                                 <Text>Отменить</Text>
                             </Button>
-                            <Button style={{ marginLeft: 7 }} onPress={async () => this.handleSave()}>
+                            <Button
+                                style={styles.mx1}
+                                primary
+                                onPress={() => this.handleSave()}
+                            >
                                 <Text>Сохранить</Text>
                             </Button>
                         </View>
                     </View>
                 </Modal>
 
-                <Modal
-                    animationIn="fadeIn"
-                    animationOut="fadeOut"
-                    avoidKeyboard
-                    isVisible={modalType === 'refresh'}
-                    onBackButtonPress={() => this.handleClose()}
-                    onBackdropPress={() => this.handleClose()}
-                >
-                    <View style={styles.modal}>
-                        <H3>Очистить таблицу?</H3>
-
-                        <View style={{ marginBottom: 14 }}/>
-
-                        <View style={{
-                            flexDirection: 'row',
-                            alignItems: 'flex-end',
-                            justifyContent: 'flex-end',
-                        }}>
-                            <Button style={{ marginRight: 7 }} transparent onPress={() => this.handleClose()}>
-                                <Text>Отменить</Text>
-                            </Button>
-                            <Button style={{ marginLeft: 7 }} onPress={async () => this.handleRefresh()}>
-                                <Text>Очистить</Text>
-                            </Button>
-                        </View>
+                <View style={[styles.bgSecondary, { flexDirection: 'row' }]}>
+                    <View style={[styles.flex1, { flexDirection: 'row' }]}>
+                        <Button
+                            style={[styles.flex1, { height: 'auto' }]}
+                            full
+                            onPress={() => this.handleAdd()}
+                        >
+                            <Icon style={styles.white} type="MaterialIcons" name="add"/>
+                        </Button>
+                        <Button
+                            style={[styles.flex1, { height: 'auto' }]}
+                            full
+                            onPress={() => this.setState({ modalType: 'save' })}
+                        >
+                            <Icon style={styles.white} type="MaterialIcons" name="save"/>
+                        </Button>
+                        <Button
+                            style={[styles.flex1, { height: 'auto' }]}
+                            full
+                            onPress={() => this.handleRefresh()}
+                        >
+                            <Icon style={styles.white} type="MaterialIcons" name="refresh"/>
+                        </Button>
                     </View>
-                </Modal>
 
-                <View style={styles.container}>
-                    <FooterTab>
-                        <Button full onPress={() => this.setState({ modalType: 'add' })}>
-                            <Icon style={styles.icon} type="MaterialIcons" name="add"/>
-                        </Button>
-                        <Button full onPress={() => this.setState({ modalType: 'save' })}>
-                            <Icon style={styles.icon} type="MaterialIcons" name="save"/>
-                        </Button>
-                        <Button full onPress={() => this.setState({ modalType: 'refresh' })}>
-                            <Icon style={styles.icon} type="MaterialIcons" name="refresh"/>
-                        </Button>
-                    </FooterTab>
-                    <View style={styles.total}>
-                        <Text style={styles.text}>{this.computeTotal().toFixed(2)} грн</Text>
+                    <View style={[styles.flex1, styles.bgDark, { alignItems: 'center', justifyContent: 'center' }]}>
+                        <Title style={styles.white}>
+                            {this.computeTotal().toFixed(2)} грн
+                        </Title>
                     </View>
                 </View>
             </>

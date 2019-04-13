@@ -3,6 +3,8 @@ package com.receipt;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
+import cl.json.RNSharePackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.facebook.react.ReactNativeHost;
@@ -24,9 +26,11 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new RNGestureHandlerPackage(),
-            new AsyncStoragePackage()
+        new MainReactPackage(),
+        new RNFSPackage(),
+        new RNSharePackage(),
+        new RNGestureHandlerPackage(),
+        new AsyncStoragePackage()
       );
     }
 
