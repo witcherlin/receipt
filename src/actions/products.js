@@ -27,35 +27,39 @@ export function setProducts(products) {
 
 export function loadProducts() {
     return async (dispatch) => {
-        await dispatch(setLoading(true));
+        dispatch(setLoading(true));
 
         try {
-            const products = await AsyncStorage.getItem('@receipt/products');
+            const products = JSON.parse(await AsyncStorage.getItem('@receipt/products')) || [];
 
-            dispatch(setProducts(JSON.parse(products) || []));
+            dispatch(setProducts(products));
 
             setTimeout(() => dispatch(setLoading(false)), 500);
         } catch (err) {
-            await dispatch(setError(err));
+            console.error('LoadProductsError:', err);
+
+            dispatch(setError(err));
         }
     };
 }
 
 export function saveProducts() {
     return async (dispatch, getStore) => {
-        const { products } = getStore();
+        const { products: { products } } = getStore();
 
         try {
             await AsyncStorage.setItem('@receipt/products', JSON.stringify(products));
         } catch (err) {
-            await dispatch(setError(err));
+            console.error('SaveProductsError:', err);
+
+            dispatch(setError(err));
         }
     };
 }
 
 export function resetProducts(column = false, value = '') {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: RESET_PRODUCTS,
             payload: column ? { column, value } : null,
         });
@@ -66,7 +70,7 @@ export function resetProducts(column = false, value = '') {
 
 export function addProduct(data = {}) {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: ADD_PRODUCT,
             payload: {
                 title: '',
@@ -84,7 +88,7 @@ export function addProduct(data = {}) {
 
 export function updateProduct(id, data) {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: UPDATE_PRODUCT,
             payload: {
                 id,
@@ -98,7 +102,7 @@ export function updateProduct(id, data) {
 
 export function removeProduct(id) {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: REMOVE_PRODUCT,
             payload: id,
         });

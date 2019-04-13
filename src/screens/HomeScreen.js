@@ -3,21 +3,7 @@ import { connect } from 'react-redux';
 
 import Modal from 'react-native-modal';
 
-import {
-    ActionSheet,
-    Button,
-    Content,
-    Form,
-    Icon,
-    Item,
-    Label,
-    ListItem,
-    Spinner,
-    Text,
-    Title,
-    Toast,
-    View,
-} from 'native-base';
+import { ActionSheet, Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } from 'native-base';
 
 import { addProduct, loadProducts, removeProduct, resetProducts, updateProduct } from '../actions/products';
 import { addReceipt } from '../actions/receipts';
@@ -91,7 +77,7 @@ class HomeScreen extends Component {
         ActionSheet.show(
             {
                 title: 'Очистить таблицу?',
-                options: ['Очитстить', 'Отменить'],
+                options: ['Очистить', 'Отменить'],
                 destructiveButtonIndex: 0,
                 cancelButtonIndex: 1,
             },
@@ -167,15 +153,16 @@ class HomeScreen extends Component {
                     <View style={[styles.p3, styles.bgWhite, { borderRadius: 5 }]}>
                         <Title style={[styles.mb2, styles.dark]}>Сохранить квитанцию?</Title>
 
-                        <Form style={styles.mb3}>
-                            <Item style={styles.m0} stackedLabel error={modalInputTitle.length < 3}>
-                                <Label>Название</Label>
-                                <Input
-                                    onChangeText={text => this.setState({ modalInputTitle: text })}
-                                    value={modalInputTitle}
-                                />
-                            </Item>
-                        </Form>
+                        <View style={[styles.mb3]}>
+                            <Input
+                                style={{ fontSize: 16, borderBottomWidth: 1, borderBottomColor: colors.gray }}
+                                textAlign="center"
+                                disableFullscreenUI
+                                selectTextOnFocus
+                                onChangeText={text => this.setState({ modalInputTitle: text })}
+                                value={modalInputTitle}
+                            />
+                        </View>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                             <Button
@@ -237,7 +224,7 @@ class HomeScreen extends Component {
                                     ]}>
                                         <View style={[styles.flex2, { borderRightWidth: 1, borderColor: colors.gray }]}>
                                             <Input
-                                                style={[styles.flex1, { fontSize: 17 }]}
+                                                style={{ fontSize: 16 }}
                                                 textAlign="center"
                                                 disableFullscreenUI
                                                 selectTextOnFocus
@@ -251,7 +238,7 @@ class HomeScreen extends Component {
                                             { borderRightWidth: 1, borderColor: colors.gray },
                                         ]}>
                                             <Input
-                                                style={[styles.flex1, { fontSize: 17 }]}
+                                                style={{ fontSize: 16 }}
                                                 keyboardType="decimal-pad"
                                                 textAlign="center"
                                                 disableFullscreenUI
@@ -262,7 +249,7 @@ class HomeScreen extends Component {
                                         </View>
                                         <View style={[styles.flex1, { borderRightWidth: 1, borderColor: colors.gray }]}>
                                             <Input
-                                                style={[styles.flex1, { fontSize: 17 }]}
+                                                style={{ fontSize: 16 }}
                                                 keyboardType="decimal-pad"
                                                 textAlign="center"
                                                 disableFullscreenUI
@@ -272,7 +259,7 @@ class HomeScreen extends Component {
                                             />
                                         </View>
                                         <View style={[styles.flex2, { borderColor: colors.gray }]}>
-                                            <Text style={[styles.fontBold, { alignSelf: 'center', fontSize: 17 }]}>
+                                            <Text style={[styles.fontBold, { alignSelf: 'center', fontSize: 16 }]}>
                                                 {(product.quantity * product.price).toFixed(2)}
                                             </Text>
                                         </View>
@@ -292,7 +279,7 @@ class HomeScreen extends Component {
                 </Content>
 
                 {!loading && (
-                    <View style={[styles.bgSecondary, { flexDirection: 'row' }]}>
+                    <View style={[styles.bgSecondary, { height: 42, flexDirection: 'row' }]}>
                         <View style={[styles.flex1, { flexDirection: 'row' }]}>
                             <Button
                                 style={[styles.flex1, { height: 'auto' }]}

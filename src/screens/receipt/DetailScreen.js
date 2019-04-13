@@ -26,7 +26,11 @@ export default class DetailScreen extends Component {
                             #{receipt.id}
                         </Title>
                     </View>
-                    <View style={[styles.flex1]}/>
+                    <View style={[styles.flex1]}>
+                        <Button transparent>
+                            <Icon style={styles.white} name="share"/>
+                        </Button>
+                    </View>
                 </View>
 
                 <Content padder>

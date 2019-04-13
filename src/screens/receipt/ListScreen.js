@@ -77,7 +77,10 @@ class ListScreen extends Component {
 
         return (
             <>
-                <View style={[{ height: 42, flexDirection: 'row', alignItems: 'center' }, styles.bgPrimary]}>
+                <View style={[
+                    { height: 42, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+                    styles.bgPrimary,
+                ]}>
                     <View style={[styles.flex1]}>
                         <Button transparent onPress={() => navigation.openDrawer()}>
                             <Icon style={styles.white} name="menu"/>
@@ -86,7 +89,11 @@ class ListScreen extends Component {
                     <View style={[styles.flex1]}>
                         <Title style={[styles.p0, styles.white]}>Квитанции</Title>
                     </View>
-                    <View style={[styles.flex1]}/>
+                    <View style={[styles.flex1]}>
+                        <Button transparent>
+                            <Icon style={styles.white} name="share"/>
+                        </Button>
+                    </View>
                 </View>
 
                 <Content>

@@ -27,35 +27,39 @@ export function setReceipts(receipts) {
 
 export function loadReceipts() {
     return async (dispatch) => {
-        await dispatch(setLoading(true));
+        dispatch(setLoading(true));
 
         try {
-            const receipts = await AsyncStorage.getItem('@receipt/receipts');
+            const receipts = JSON.parse(await AsyncStorage.getItem('@receipt/receipts')) || [];
 
-            dispatch(setReceipts(JSON.parse(receipts) || []));
+            dispatch(setReceipts(receipts));
 
             setTimeout(() => dispatch(setLoading(false)), 500);
         } catch (err) {
-            await dispatch(setError(err));
+            console.error('LoadReceiptsError:', err);
+
+            dispatch(setError(err));
         }
     };
 }
 
 export function saveReceipts() {
     return async (dispatch, getStore) => {
-        const { receipts } = getStore();
+        const { receipts: { receipts } } = getStore();
 
         try {
             await AsyncStorage.setItem('@receipt/receipts', JSON.stringify(receipts));
         } catch (err) {
-            await dispatch(setError(err));
+            console.error('SaveReceiptsError:', err);
+
+            dispatch(setError(err));
         }
     };
 }
 
 export function resetReceipts(column = false, value = '') {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: RESET_RECEIPTS,
             payload: column ? { column, value } : null,
         });
@@ -66,7 +70,7 @@ export function resetReceipts(column = false, value = '') {
 
 export function addReceipt(data = {}) {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: ADD_RECEIPT,
             payload: {
                 ...data,
@@ -81,7 +85,7 @@ export function addReceipt(data = {}) {
 
 export function updateReceipt(id, data) {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: UPDATE_RECEIPT,
             payload: {
                 id,
@@ -95,7 +99,7 @@ export function updateReceipt(id, data) {
 
 export function removeReceipt(id) {
     return async (dispatch) => {
-        await dispatch({
+        dispatch({
             type: REMOVE_RECEIPT,
             payload: id,
         });
