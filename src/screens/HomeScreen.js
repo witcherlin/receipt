@@ -161,16 +161,12 @@ class HomeScreen extends Component {
         });
     }
 
-    computeTotal() {
-        return this.props.products.reduce((total, product) => (total + (product.quantity * product.price)), 0);
-    }
-
     componentDidMount() {
         this.props.dispatch(loadProducts());
     }
 
     render() {
-        const { loading, products, dispatch } = this.props;
+        const { loading, products, total, dispatch } = this.props;
 
         return (
             <>
@@ -240,7 +236,7 @@ class HomeScreen extends Component {
                                         </View>
                                         <View style={[styles.flex2, { alignItems: 'center' }]}>
                                             <Text style={[styles.fontBold, { fontSize: 16 }]}>
-                                                {(product.quantity * product.price).toFixed(2)}
+                                                {(product.total).toFixed(2)}
                                             </Text>
                                         </View>
                                     </ListItem>
@@ -286,7 +282,7 @@ class HomeScreen extends Component {
 
                         <View style={[styles.flex1, styles.bgDark, { alignItems: 'center', justifyContent: 'center' }]}>
                             <Title style={styles.white}>
-                                {this.computeTotal().toFixed(2)} грн
+                                {total.toFixed(2)} грн
                             </Title>
                         </View>
                     </View>
@@ -299,6 +295,6 @@ class HomeScreen extends Component {
 export default connect(
     state => ({
         loading: state.products.loading,
-        products: state.products.products,
+        ...getProducts(state),
     }),
 )(HomeScreen);

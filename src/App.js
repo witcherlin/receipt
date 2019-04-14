@@ -31,7 +31,7 @@ const MainNavigator = createDrawerNavigator(
     },
     {
         drawerType: 'slide',
-        initialRouteName: 'Home',
+        initialRouteName: 'Receipt',
         contentComponent: props => <Drawer {...props} />,
     },
 );
