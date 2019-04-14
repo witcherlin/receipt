@@ -6,7 +6,7 @@ import { Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } fr
 import { addProduct, loadProducts, removeProduct, resetProducts, updateProduct } from '../actions/products';
 import { addReceipt } from '../actions/receipts';
 
-import { getProducts } from '../selectors/products';
+import { getProducts, getProductsTotal } from '../selectors/products';
 
 import List from '../components/List';
 import Input from '../components/Input';
@@ -48,7 +48,7 @@ class HomeScreen extends Component {
     }
 
     async handleSave() {
-        const { products, dispatch } = this.props;
+        const { products, total, dispatch } = this.props;
 
         Modal.show({
             state: {
@@ -62,8 +62,8 @@ class HomeScreen extends Component {
                         styles.bb1,
                         styles.fontRegular,
                         {
-                            color: !modal.state.valid ? colors.danger : colors.dark,
-                            borderColor: !modal.state.valid ? colors.danger : colors.gray,
+                            color: !modal.state.valid || total <= 0 ? colors.danger : colors.dark,
+                            borderColor: !modal.state.valid || total <= 0 ? colors.danger : colors.gray,
                         },
                     ]}
                     disableFullscreenUI
@@ -81,7 +81,7 @@ class HomeScreen extends Component {
                 },
                 {
                     onPress: async () => {
-                        if (!modal.state.valid) {
+                        if (!modal.state.valid || total <= 0) {
                             return;
                         }
 
@@ -89,7 +89,8 @@ class HomeScreen extends Component {
 
                         await dispatch(addReceipt({
                             title: modal.state.title,
-                            products: [...products],
+                            products,
+                            total,
                         }));
 
                         Toast.show({
@@ -109,7 +110,7 @@ class HomeScreen extends Component {
         const { dispatch } = this.props;
 
         Modal.show({
-            title: 'Очистить таблицу?',
+            title: 'Очистить количество?',
             buttons: () => ([
                 {
                     transparent: true,
@@ -302,6 +303,7 @@ class HomeScreen extends Component {
 export default connect(
     state => ({
         loading: state.products.loading,
-        ...getProducts(state),
+        products: getProducts(state),
+        total: getProductsTotal(state),
     }),
 )(HomeScreen);
