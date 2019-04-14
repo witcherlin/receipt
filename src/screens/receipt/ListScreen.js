@@ -51,7 +51,7 @@ class ListScreen extends Component {
         const { navigation, loading, receipts } = this.props;
 
         return (
-            <View>
+            <>
                 <View style={[
                     styles.bgPrimary,
                     {
@@ -120,7 +120,7 @@ class ListScreen extends Component {
                         )
                     }
                 </Content>
-            </View>
+            </>
         );
     }
 }

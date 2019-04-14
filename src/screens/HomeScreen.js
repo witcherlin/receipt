@@ -175,7 +175,7 @@ class HomeScreen extends Component {
         const { loading, products, total } = this.props;
 
         return (
-            <View>
+            <>
                 <Content>
                     <View style={[styles.bgPrimary, { height: 42, flexDirection: 'row', alignItems: 'center' }]}>
                         <Title style={[styles.flex2, styles.white]}>Название</Title>
@@ -294,7 +294,7 @@ class HomeScreen extends Component {
                         </View>
                     </View>
                 )}
-            </View>
+            </>
         );
     }
 }

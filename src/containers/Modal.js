@@ -21,6 +21,12 @@ export default class Modal extends Component {
         }
     }
 
+    constructor(props) {
+        super(props);
+
+        this.state = {};
+    }
+
     show({ state = {}, title, description, body, buttons }) {
         this.setState({
             state: { ...state },

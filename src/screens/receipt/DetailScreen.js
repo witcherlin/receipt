@@ -79,7 +79,7 @@ class DetailScreen extends Component {
         }
 
         return (
-            <View>
+            <>
                 <View style={[
                     styles.bgPrimary,
                     {
@@ -233,7 +233,7 @@ class DetailScreen extends Component {
                         <Text>Удалить квитанцию</Text>
                     </Button>
                 </Content>
-            </View>
+            </>
         );
     }
 }
