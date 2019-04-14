@@ -35,7 +35,7 @@ export default class List extends Component {
                     <SwipeRow
                         key={idx}
                         style={[styles.m0, styles.p0]}
-                        ref={ref => (ref._root ? (this.rows[idx] = ref._root) : null)}
+                        ref={ref => (ref && ref._root ? (this.rows[idx] = ref._root) : null)}
                         disableLeftSwipe={!right}
                         disableRightSwipe={!left}
                         leftOpenValue={leftValue}
