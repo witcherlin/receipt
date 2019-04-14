@@ -6,48 +6,78 @@ import { connect } from 'react-redux';
 import ViewShot from 'react-native-view-shot';
 import Share from 'react-native-share';
 
-import { Button, Content, Icon, Text, Title, View } from 'native-base';
+import { Button, Content, Icon, Text, Title, Toast, View } from 'native-base';
 
-import { updateReceipt } from '../../actions/receipts';
+import { removeReceipt, updateReceipt } from '../../actions/receipts';
 
 import { findReceipt } from '../../selectors/receipts';
 
 import Input from '../../components/Input';
 
+import Modal from '../../containers/Modal';
+
 import styles, { colors } from '../../styles';
 
 class DetailScreen extends Component {
-    handleShare() {
-        const { receipt } = this.props;
+    async handleShare(receipt) {
+        const uri = await this.viewShot.capture();
 
-        this.refs.viewShot.capture().then(uri => {
-            Share.open({
-                title: `Квитанция #${receipt.id} для ${receipt.title}`,
-                subject: `Квитанция #${receipt.id} для ${receipt.title}`,
-                message: [
-                    `#${receipt.id}`,
-                    receipt.title,
-                    moment(receipt.createdAt).format('DD.MM.YYYY HH:mm'),
-                ].join('\n') + '\n',
-                url: `data:image/png;base64,${uri}`,
-                failOnCancel: false,
-                showAppsToView: true,
-            })
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((err) => {
-                    err && console.warn(err);
-                });
+        await Share.open({
+            title: `Квитанция #${receipt.id} для ${receipt.title}`,
+            subject: `Квитанция #${receipt.id} для ${receipt.title}`,
+            message: [
+                `#${receipt.id}`,
+                receipt.title,
+                moment(receipt.createdAt).format('DD.MM.YYYY HH:mm'),
+            ].join('\n') + '\n',
+            url: `data:image/png;base64,${uri}`,
+            failOnCancel: false,
+            showAppsToView: true,
         });
+    }
+
+    async handleRemove(receipt) {
+        const { dispatch } = this.props;
+
+        Modal.show({
+            title: 'Удалить квитанцию?',
+            buttons: () => ([
+                {
+                    transparent: true,
+                    close: true,
+                    text: 'Отменить',
+                },
+                {
+                    onPress: async () => {
+                        await dispatch(removeReceipt(receipt.id));
+
+                        Toast.show({
+                            position: 'bottom',
+                            text: 'Квитанция удалена',
+                            buttonText: 'Закрыть',
+                        });
+                    },
+                    primary: true,
+                    close: true,
+                    text: 'Удалить',
+                },
+            ]),
+        });
+    }
+
+    componentDidUpdate() {
+        const { navigation, receipt } = this.props;
+
+        if (!receipt) {
+            navigation.goBack();
+        }
     }
 
     render() {
         const { navigation, receipt, dispatch } = this.props;
 
         if (!receipt) {
-            navigation.goBack();
-            return;
+            return <View/>;
         }
 
         return (
@@ -62,13 +92,13 @@ class DetailScreen extends Component {
 
                     <Title style={[styles.p0, styles.white]}>{receipt.title}</Title>
 
-                    <Button transparent onPress={() => this.handleShare()}>
+                    <Button transparent onPress={() => this.handleShare(receipt)}>
                         <Icon style={styles.white} name="share"/>
                     </Button>
                 </View>
 
                 <Content>
-                    <ViewShot ref="viewShot" options={{ result: 'base64' }}>
+                    <ViewShot style={styles.bgWhite} ref={ref => (this.viewShot = ref)} options={{ result: 'base64' }}>
                         <View style={[styles.my3, { alignItems: 'center' }]}>
                             <Text>Квитанция #{receipt.id}</Text>
                             <Input
@@ -192,7 +222,7 @@ class DetailScreen extends Component {
                         </View>
                     </ViewShot>
 
-                    <Button style={styles.mb3} full danger>
+                    <Button full danger onPress={() => this.handleRemove(receipt)}>
                         <Text>Удалить квитанцию</Text>
                     </Button>
                 </Content>

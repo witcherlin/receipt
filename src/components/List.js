@@ -27,7 +27,7 @@ export default class List extends Component {
     }
 
     render() {
-        const { style, data, left, body, right, leftValue = 75, rightValue = -75, list = true } = this.props;
+        const { style, data, left, body, right, leftValue = 50, rightValue = -50, list = true } = this.props;
 
         return (
             <View style={[styles.m0, styles.p0, style]}>

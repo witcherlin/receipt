@@ -3,8 +3,6 @@ import moment from 'moment';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Share from 'react-native-share';
-
 import { Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } from 'native-base';
 
 import { loadReceipts, removeReceipt } from '../../actions/receipts';
@@ -15,21 +13,6 @@ import styles, { colors } from '../../styles';
 import Modal from '../../containers/Modal';
 
 class ListScreen extends Component {
-    async handleShare(receipt) {
-        Share.open({
-            title: `#${receipt.id}`,
-            message: `Share receipt #${receipt.id}`,
-            subject: 'Share subject',
-            url: 'https://google.com/',
-        })
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((err) => {
-                err && console.log(err);
-            });
-    }
-
     async handleRemove(receipt) {
         const { dispatch } = this.props;
 
@@ -92,7 +75,7 @@ class ListScreen extends Component {
                         )
                         : (
                             <List
-                                rightValue={-100}
+                                rightValue={-50}
                                 data={receipts.sort((a, b) => (b.createdAt - a.createdAt))}
                                 body={receipt => (
                                     <ListItem
@@ -120,14 +103,6 @@ class ListScreen extends Component {
                                 )}
                                 right={receipt => (
                                     <View style={[styles.flex1, { flexDirection: 'row', backgroundColor: '#1e1e1e' }]}>
-                                        <Button
-                                            style={[styles.flex1, { height: 'auto' }]}
-                                            full
-                                            primary
-                                            onPress={() => this.handleShare(receipt)}
-                                        >
-                                            <Icon name="share"/>
-                                        </Button>
                                         <Button
                                             style={[styles.flex1, { height: 'auto' }]}
                                             full
