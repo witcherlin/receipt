@@ -2,8 +2,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import uniqid from '../utils/uniqid';
 
-import { setError } from './common';
-
 export const SET_LOADING = '@@receipts/SET_LOADING';
 export const SET_RECEIPTS = '@@receipts/SET_RECEIPTS';
 export const RESET_RECEIPTS = '@@receipts/RESET_RECEIPTS';
@@ -29,17 +27,11 @@ export function loadReceipts() {
     return async (dispatch) => {
         dispatch(setLoading(true));
 
-        try {
-            const receipts = JSON.parse(await AsyncStorage.getItem('@receipt/receipts')) || [];
+        const receipts = JSON.parse(await AsyncStorage.getItem('@receipt/receipts')) || [];
 
-            dispatch(setReceipts(receipts));
+        dispatch(setReceipts(receipts));
 
-            setTimeout(() => dispatch(setLoading(false)), 500);
-        } catch (err) {
-            console.error('LoadReceiptsError:', err);
-
-            dispatch(setError(err));
-        }
+        setTimeout(() => dispatch(setLoading(false)), 500);
     };
 }
 
@@ -47,13 +39,7 @@ export function saveReceipts() {
     return async (dispatch, getStore) => {
         const { receipts: { receipts } } = getStore();
 
-        try {
-            await AsyncStorage.setItem('@receipt/receipts', JSON.stringify(receipts));
-        } catch (err) {
-            console.error('SaveReceiptsError:', err);
-
-            dispatch(setError(err));
-        }
+        await AsyncStorage.setItem('@receipt/receipts', JSON.stringify(receipts));
     };
 }
 

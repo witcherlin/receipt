@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { createAppContainer, createDrawerNavigator, createStackNavigator } from 'react-navigation';
 
-import { Container, Content, Root, Text, Title, View } from 'native-base';
+import { Container, Root } from 'native-base';
 
 import Drawer from './containers/Drawer';
 import Modal from './containers/Modal';
@@ -10,8 +9,6 @@ import Modal from './containers/Modal';
 import HomeScreen from './screens/HomeScreen';
 import ListScreen from './screens/receipt/ListScreen';
 import DetailScreen from './screens/receipt/DetailScreen';
-
-import styles from './styles';
 
 const MainNavigator = createDrawerNavigator(
     {
@@ -38,25 +35,8 @@ const MainNavigator = createDrawerNavigator(
 
 const AppContainer = createAppContainer(MainNavigator);
 
-class App extends Component {
+export default class App extends Component {
     render() {
-        const { common } = this.props;
-
-        if (common.error) {
-            return (
-                <Root>
-                    <Container>
-                        <View style={styles.overlay}>
-                            <Content padder>
-                                <Title style={[styles.mb3, styles.dark]}>Произошла ошибка</Title>
-                                <Text>{common.error.stack}</Text>
-                            </Content>
-                        </View>
-                    </Container>
-                </Root>
-            );
-        }
-
         return (
             <Root>
                 <Container>
@@ -68,9 +48,3 @@ class App extends Component {
         );
     }
 }
-
-export default connect(
-    state => ({
-        common: state.common,
-    }),
-)(App);

@@ -5,7 +5,6 @@ import { Platform, StatusBar, View } from 'react-native';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 
-import common from './reducers/common';
 import products from './reducers/products';
 import receipts from './reducers/receipts';
 
@@ -14,7 +13,6 @@ import App from './App';
 import styles, { colors } from './styles';
 
 const reducers = combineReducers({
-    common,
     products,
     receipts,
 });

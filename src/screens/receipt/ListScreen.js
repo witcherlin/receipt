@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
@@ -7,10 +5,13 @@ import { Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } fr
 
 import { loadReceipts, removeReceipt } from '../../actions/receipts';
 
+import { getReceipts } from '../../selectors/receipts';
+
 import List from '../../components/List';
 
-import styles, { colors } from '../../styles';
 import Modal from '../../containers/Modal';
+
+import styles, { colors } from '../../styles';
 
 class ListScreen extends Component {
     async handleRemove(receipt) {
@@ -50,10 +51,15 @@ class ListScreen extends Component {
         const { navigation, loading, receipts } = this.props;
 
         return (
-            <>
+            <View>
                 <View style={[
-                    { height: 42, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
                     styles.bgPrimary,
+                    {
+                        height: 42,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    },
                 ]}>
                     <Button transparent onPress={() => navigation.openDrawer()}>
                         <Icon style={styles.white} name="menu"/>
@@ -76,29 +82,26 @@ class ListScreen extends Component {
                         : (
                             <List
                                 rightValue={-50}
-                                data={receipts.sort((a, b) => (b.createdAt - a.createdAt))}
+                                data={receipts}
                                 body={receipt => (
                                     <ListItem
                                         style={[
                                             styles.m0,
                                             styles.p3,
+                                            styles.bb1,
                                             {
                                                 height: 50,
                                                 flexDirection: 'row',
                                                 alignItems: 'center',
                                                 justifyContent: 'space-between',
-                                                borderBottomWidth: 1,
-                                                borderBottomColor: colors.gray,
+                                                borderColor: colors.gray,
                                             },
                                         ]}
                                         button
                                         onPress={() => navigation.navigate('Detail', { id: receipt.id })}
                                     >
                                         <Text>{receipt.title}</Text>
-
-                                        <Text style={styles.textRight} note>
-                                            {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
-                                        </Text>
+                                        <Text style={styles.textRight} note>{receipt.createdAt}</Text>
                                     </ListItem>
                                 )}
                                 right={receipt => (
@@ -117,7 +120,7 @@ class ListScreen extends Component {
                         )
                     }
                 </Content>
-            </>
+            </View>
         );
     }
 }
@@ -125,6 +128,6 @@ class ListScreen extends Component {
 export default connect(
     state => ({
         loading: state.receipts.loading,
-        receipts: state.receipts.receipts,
+        receipts: getReceipts(state),
     }),
 )(ListScreen);

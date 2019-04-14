@@ -1,16 +1,25 @@
+import moment from 'moment';
+
 import { computeProducts } from './products';
 
-export function findReceipt(state, id) {
-    const receipt = state.receipts.receipts.find(receipt => receipt.id === id);
+export function computeReceipts(receipts) {
+    return receipts.map((receipt) => {
+        const products = computeProducts(receipt.products);
 
-    if (!receipt) {
-        return null;
-    }
+        receipt.products = products.products;
+        receipt.total = products.total;
+        receipt.createdAt = moment(receipt.createdAt).format('DD.MM.YYYY HH:mm');
 
-    const products = computeProducts(receipt.products);
+        return receipt;
+    });
+}
 
-    receipt.products = products.products;
-    receipt.total = products.total;
+export function getReceipts(state) {
+    return computeReceipts(state.receipts.receipts)
+        .sort((a, b) => (b.createdAt - a.createdAt));
+}
 
-    return receipt;
+export function getReceiptById(state, id) {
+    return getReceipts(state)
+        .find(receipt => receipt.id === id);
 }

@@ -39,7 +39,7 @@ export default class Input extends Component {
             <TouchableWithoutFeedback onPress={() => this.handlePress()}>
                 <View pointerEvents={pointerEvents}>
                     <TextInput
-                        ref={ref => this.textInput = ref}
+                        ref={ref => (this.textInput = ref)}
                         style={[styles.p1, style]}
                         onBlur={() => this.handleBlur()}
                         {...props}

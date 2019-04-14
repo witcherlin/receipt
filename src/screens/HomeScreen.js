@@ -56,22 +56,24 @@ class HomeScreen extends Component {
                 valid: false,
             },
             title: 'Сохранить квитанцию?',
-            body: (state) => (
+            body: (modal) => (
                 <Input
-                    style={{
-                        fontSize: 16,
-                        color: !state.valid ? colors.danger : colors.dark,
-                        borderBottomWidth: 1,
-                        borderBottomColor: !state.valid ? colors.danger : colors.gray,
-                    }}
+                    style={[
+                        styles.bb1,
+                        styles.fontRegular,
+                        {
+                            color: !modal.state.valid ? colors.danger : colors.dark,
+                            borderColor: !modal.state.valid ? colors.danger : colors.gray,
+                        },
+                    ]}
                     disableFullscreenUI
                     selectTextOnFocus
                     autoFocus
-                    onChangeText={text => state.set({ title: text, valid: text.length > 2 })}
-                    value={state.title}
+                    onChangeText={text => modal.setState({ title: text, valid: text.length > 2 })}
+                    value={modal.state.title}
                 />
             ),
-            buttons: (state) => ([
+            buttons: (modal) => ([
                 {
                     transparent: true,
                     close: true,
@@ -79,14 +81,14 @@ class HomeScreen extends Component {
                 },
                 {
                     onPress: async () => {
-                        if (!state.valid) {
+                        if (!modal.state.valid) {
                             return;
                         }
 
                         Modal.hide();
 
                         await dispatch(addReceipt({
-                            title: state.title,
+                            title: modal.state.title,
                             products: [...products],
                         }));
 
@@ -132,6 +134,10 @@ class HomeScreen extends Component {
         });
     }
 
+    async handleUpdate(product, property, value) {
+        await this.props.dispatch(updateProduct(product.id, { [property]: value }));
+    }
+
     async handleRemove(product) {
         const { dispatch } = this.props;
 
@@ -166,10 +172,10 @@ class HomeScreen extends Component {
     }
 
     render() {
-        const { loading, products, total, dispatch } = this.props;
+        const { loading, products, total } = this.props;
 
         return (
-            <>
+            <View>
                 <Content>
                     <View style={[styles.bgPrimary, { height: 42, flexDirection: 'row', alignItems: 'center' }]}>
                         <Title style={[styles.flex2, styles.white]}>Название</Title>
@@ -191,27 +197,28 @@ class HomeScreen extends Component {
                                     <ListItem style={[
                                         styles.m0,
                                         styles.p0,
+                                        styles.bb1,
                                         {
                                             height: 50,
                                             flexDirection: 'row',
-                                            borderBottomWidth: 1,
-                                            borderBottomColor: colors.gray,
+                                            borderColor: colors.gray,
                                         },
                                     ]}>
-                                        <View style={[styles.flex2, { borderRightWidth: 1, borderColor: colors.gray }]}>
+                                        <View style={[styles.flex2, styles.br1, { borderColor: colors.gray }]}>
                                             <Input
                                                 style={{ height: 50, fontSize: 16 }}
                                                 textAlign="center"
                                                 disableFullscreenUI
                                                 selectTextOnFocus
-                                                onChangeText={text => dispatch(updateProduct(product.id, { title: text }))}
+                                                onChangeText={text => this.handleUpdate(product, 'title', text)}
                                                 value={product.title}
                                             />
                                         </View>
                                         <View style={[
                                             styles.flex2,
                                             styles.bgLight,
-                                            { borderRightWidth: 1, borderColor: colors.gray },
+                                            styles.br1,
+                                            { borderColor: colors.gray },
                                         ]}>
                                             <Input
                                                 style={{ height: 49, fontSize: 16 }}
@@ -219,24 +226,24 @@ class HomeScreen extends Component {
                                                 textAlign="center"
                                                 disableFullscreenUI
                                                 selectTextOnFocus
-                                                onChangeText={text => dispatch(updateProduct(product.id, { quantity: toNumber(text) }))}
+                                                onChangeText={text => this.handleUpdate(product, 'quantity', toNumber(text))}
                                                 value={product.quantity.toString()}
                                             />
                                         </View>
-                                        <View style={[styles.flex1, { borderRightWidth: 1, borderColor: colors.gray }]}>
+                                        <View style={[styles.flex1, styles.br1, { borderColor: colors.gray }]}>
                                             <Input
                                                 style={{ height: 50, fontSize: 16 }}
                                                 keyboardType="decimal-pad"
                                                 textAlign="center"
                                                 disableFullscreenUI
                                                 selectTextOnFocus
-                                                onChangeText={text => dispatch(updateProduct(product.id, { price: toNumber(text) }))}
+                                                onChangeText={text => this.handleUpdate(product, 'price', toNumber(text))}
                                                 value={product.price.toString()}
                                             />
                                         </View>
                                         <View style={[styles.flex2, { alignItems: 'center' }]}>
-                                            <Text style={[styles.fontBold, { fontSize: 16 }]}>
-                                                {(product.total).toFixed(2)}
+                                            <Text style={[styles.fontRegular, styles.fontBold]}>
+                                                {product.total.toFixed(2)}
                                             </Text>
                                         </View>
                                     </ListItem>
@@ -287,7 +294,7 @@ class HomeScreen extends Component {
                         </View>
                     </View>
                 )}
-            </>
+            </View>
         );
     }
 }

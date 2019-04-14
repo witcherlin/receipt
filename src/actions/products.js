@@ -2,8 +2,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import uniqid from '../utils/uniqid';
 
-import { setError } from './common';
-
 export const SET_LOADING = '@@products/SET_LOADING';
 export const SET_PRODUCTS = '@@products/SET_PRODUCTS';
 export const RESET_PRODUCTS = '@@products/RESET_PRODUCTS';
@@ -29,17 +27,11 @@ export function loadProducts() {
     return async (dispatch) => {
         dispatch(setLoading(true));
 
-        try {
-            const products = JSON.parse(await AsyncStorage.getItem('@receipt/products')) || [];
+        const products = JSON.parse(await AsyncStorage.getItem('@receipt/products')) || [];
 
-            dispatch(setProducts(products));
+        dispatch(setProducts(products));
 
-            setTimeout(() => dispatch(setLoading(false)), 500);
-        } catch (err) {
-            console.error('LoadProductsError:', err);
-
-            dispatch(setError(err));
-        }
+        setTimeout(() => dispatch(setLoading(false)), 500);
     };
 }
 
@@ -47,13 +39,7 @@ export function saveProducts() {
     return async (dispatch, getStore) => {
         const { products: { products } } = getStore();
 
-        try {
-            await AsyncStorage.setItem('@receipt/products', JSON.stringify(products));
-        } catch (err) {
-            console.error('SaveProductsError:', err);
-
-            dispatch(setError(err));
-        }
+        await AsyncStorage.setItem('@receipt/products', JSON.stringify(products));
     };
 }
 

@@ -10,7 +10,14 @@ export default class Drawer extends Component {
 
         return (
             <Container>
-                <View style={[{ height: 42, alignItems: 'center', justifyContent: 'center' }, styles.bgPrimary]}>
+                <View style={[
+                    styles.bgPrimary,
+                    {
+                        height: 42,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    },
+                ]}>
                     <Title style={styles.white}>Меню</Title>
                 </View>
 
@@ -20,10 +27,10 @@ export default class Drawer extends Component {
                             style={[
                                 styles.m0,
                                 styles.px3,
+                                styles.bb1,
                                 {
                                     height: 50,
-                                    borderBottomWidth: 1,
-                                    borderBottomColor: colors.gray,
+                                    borderColor: colors.gray,
                                 },
                             ]}
                             first

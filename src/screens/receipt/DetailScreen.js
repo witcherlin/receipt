@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
@@ -10,11 +8,11 @@ import { Button, Content, Icon, Text, Title, Toast, View } from 'native-base';
 
 import { removeReceipt, updateReceipt } from '../../actions/receipts';
 
-import { findReceipt } from '../../selectors/receipts';
-
-import Input from '../../components/Input';
+import { getReceiptById } from '../../selectors/receipts';
 
 import Modal from '../../containers/Modal';
+
+import Input from '../../components/Input';
 
 import styles, { colors } from '../../styles';
 
@@ -23,17 +21,17 @@ class DetailScreen extends Component {
         const uri = await this.viewShot.capture();
 
         await Share.open({
-            title: `Квитанция #${receipt.id} для ${receipt.title}`,
-            subject: `Квитанция #${receipt.id} для ${receipt.title}`,
-            message: [
-                `#${receipt.id}`,
-                receipt.title,
-                moment(receipt.createdAt).format('DD.MM.YYYY HH:mm'),
-            ].join('\n') + '\n',
+            title: `Квитанция #${receipt.id} - ${receipt.title}`,
+            subject: `Квитанция #${receipt.id} - ${receipt.title}`,
+            message: [`#${receipt.id}`, receipt.title, receipt.createdAt].join('\n') + '\n',
             url: `data:image/png;base64,${uri}`,
             failOnCancel: false,
             showAppsToView: true,
         });
+    }
+
+    async handleUpdate(receipt, property, text) {
+        await this.props.dispatch(updateReceipt(receipt.id, { [property]: text }));
     }
 
     async handleRemove(receipt) {
@@ -74,17 +72,22 @@ class DetailScreen extends Component {
     }
 
     render() {
-        const { navigation, receipt, dispatch } = this.props;
+        const { navigation, receipt } = this.props;
 
         if (!receipt) {
             return <View/>;
         }
 
         return (
-            <>
+            <View>
                 <View style={[
-                    { height: 42, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
                     styles.bgPrimary,
+                    {
+                        height: 42,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    },
                 ]}>
                     <Button transparent onPress={() => navigation.goBack()}>
                         <Icon style={styles.white} name="arrow-back"/>
@@ -104,21 +107,19 @@ class DetailScreen extends Component {
                             <Input
                                 style={[
                                     styles.mb2,
+                                    styles.bb1,
+                                    styles.fontRegular,
+                                    styles.fontBold,
                                     {
-                                        fontSize: 16,
-                                        fontWeight: 'bold',
-                                        borderBottomWidth: 1,
-                                        borderBottomColor: colors.gray,
+                                        borderColor: colors.gray,
                                     },
                                 ]}
                                 disableFullscreenUI
                                 selectTextOnFocus
-                                onChangeText={text => dispatch(updateReceipt(receipt.id, { title: text }))}
+                                onChangeText={text => this.handleUpdate(receipt, 'title', text)}
                                 value={receipt.title}
                             />
-                            <Text note>
-                                {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
-                            </Text>
+                            <Text note>{receipt.createdAt}</Text>
                         </View>
 
                         <View style={styles.mb3}>
@@ -131,18 +132,20 @@ class DetailScreen extends Component {
                             </View>
 
                             {receipt.products.map((product, idx) => (
-                                <View key={idx} style={{
-                                    height: 50,
-                                    flexDirection: 'row',
-                                    borderBottomWidth: 1,
-                                    borderBottomColor: colors.gray,
-                                }}>
+                                <View key={idx} style={[
+                                    styles.bb1,
+                                    {
+                                        height: 50,
+                                        flexDirection: 'row',
+                                        borderColor: colors.gray,
+                                    },
+                                ]}>
                                     <View style={[
+                                        styles.br1,
                                         {
                                             flex: 2.25,
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            borderRightWidth: 1,
                                             borderColor: colors.gray,
                                         },
                                     ]}>
@@ -151,11 +154,11 @@ class DetailScreen extends Component {
                                         </Text>
                                     </View>
                                     <View style={[
+                                        styles.br1,
                                         {
                                             flex: 1,
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            borderRightWidth: 1,
                                             borderColor: colors.gray,
                                         },
                                     ]}>
@@ -164,11 +167,11 @@ class DetailScreen extends Component {
                                         </Text>
                                     </View>
                                     <View style={[
+                                        styles.br1,
                                         {
                                             flex: 1.25,
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            borderRightWidth: 1,
                                             borderColor: colors.gray,
                                         },
                                     ]}>
@@ -176,9 +179,13 @@ class DetailScreen extends Component {
                                             {product.price} грн
                                         </Text>
                                     </View>
-                                    <View style={[{ flex: 2, alignItems: 'center', justifyContent: 'center' }]}>
-                                        <Text style={[{ fontSize: 16 }]}>
-                                            {(product.total).toFixed(2)} грн
+                                    <View style={{
+                                        flex: 2,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}>
+                                        <Text style={[styles.fontRegular, styles.fontBold]}>
+                                            {product.total.toFixed(2)} грн
                                         </Text>
                                     </View>
                                 </View>
@@ -191,12 +198,12 @@ class DetailScreen extends Component {
                                 <View style={{ flex: 2.25 }}/>
                                 <View style={{ flex: 1 }}/>
                                 <View style={[
-                                    { flex: 1.25 },
+                                    styles.bl1,
+                                    styles.bb1,
                                     {
+                                        flex: 1.25,
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        borderLeftWidth: 1,
-                                        borderBottomWidth: 1,
                                         borderColor: colors.gray,
                                     },
                                 ]}>
@@ -205,16 +212,16 @@ class DetailScreen extends Component {
                                     </Text>
                                 </View>
                                 <View style={[
-                                    { flex: 2 },
+                                    styles.bl1,
+                                    styles.bb1,
                                     {
+                                        flex: 2,
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        borderLeftWidth: 1,
-                                        borderBottomWidth: 1,
                                         borderColor: colors.gray,
                                     },
                                 ]}>
-                                    <Text style={[styles.fontBold, { fontSize: 16 }]}>
+                                    <Text style={[styles.fontRegular, styles.fontBold]}>
                                         {receipt.total.toFixed(2)} грн
                                     </Text>
                                 </View>
@@ -226,13 +233,13 @@ class DetailScreen extends Component {
                         <Text>Удалить квитанцию</Text>
                     </Button>
                 </Content>
-            </>
+            </View>
         );
     }
 }
 
 export default connect(
     (state, props) => ({
-        receipt: findReceipt(state, props.navigation.state.params.id),
+        receipt: getReceiptById(state, props.navigation.state.params.id),
     }),
 )(DetailScreen);
