@@ -38,30 +38,30 @@ export default StyleSheet.create({
         ...styles,
 
         [`b${value}`]: {
-            borderTopWidth: value * space,
-            borderRightWidth: value * space,
-            borderBottomWidth: value * space,
-            borderLeftWidth: value * space,
+            borderTopWidth: value,
+            borderRightWidth: value,
+            borderBottomWidth: value,
+            borderLeftWidth: value,
         },
         [`bx${value}`]: {
-            borderRightWidth: value * space,
-            borderLeftWidth: value * space,
+            borderRightWidth: value,
+            borderLeftWidth: value,
         },
         [`by${value}`]: {
-            borderTopWidth: value * space,
-            borderBottomWidth: value * space,
+            borderTopWidth: value,
+            borderBottomWidth: value,
         },
         [`bt${value}`]: {
-            borderTopWidth: value * space,
+            borderTopWidth: value,
         },
         [`br${value}`]: {
-            borderRightWidth: value * space,
+            borderRightWidth: value,
         },
         [`bb${value}`]: {
-            borderBottomWidth: value * space,
+            borderBottomWidth: value,
         },
         [`bl${value}`]: {
-            borderLeftWidth: value * space,
+            borderLeftWidth: value,
         },
 
         [`m${value}`]: {
