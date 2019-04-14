@@ -1,128 +1,163 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Modal from 'react-native-modal';
-
-import { ActionSheet, Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } from 'native-base';
+import { Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } from 'native-base';
 
 import { addProduct, loadProducts, removeProduct, resetProducts, updateProduct } from '../actions/products';
 import { addReceipt } from '../actions/receipts';
 
+import { getProducts } from '../selectors/products';
+
 import List from '../components/List';
 import Input from '../components/Input';
+
+import Modal from '../containers/Modal';
 
 import { toNumber } from '../utils/string';
 
 import styles, { colors } from '../styles';
 
 class HomeScreen extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            modalType: false,
-            modalInputTitle: '',
-        };
-    }
-
     async handleAdd() {
         const { dispatch } = this.props;
 
-        ActionSheet.show(
-            {
-                title: 'Добавить товар?',
-                options: ['Добавить', 'Отменить'],
-                destructiveButtonIndex: 0,
-                cancelButtonIndex: 1,
-            },
-            async (buttonIndex) => {
-                if (buttonIndex === 0) {
-                    await dispatch(addProduct());
+        Modal.show({
+            title: 'Добавить товар?',
+            buttons: () => ([
+                {
+                    transparent: true,
+                    close: true,
+                    text: 'Отменить',
+                },
+                {
+                    onPress: async () => {
+                        await dispatch(addProduct());
 
-                    Toast.show({
-                        position: 'bottom',
-                        text: 'Товар добавлен',
-                        buttonText: 'Закрыть',
-                    });
-                }
-            },
-        );
+                        Toast.show({
+                            position: 'bottom',
+                            text: 'Товар добавлен',
+                            buttonText: 'Закрыть',
+                        });
+                    },
+                    primary: true,
+                    close: true,
+                    text: 'Добавить',
+                },
+            ]),
+        });
     }
 
     async handleSave() {
         const { products, dispatch } = this.props;
-        const { modalInputTitle } = this.state;
 
-        if (modalInputTitle.length < 2 || products.length === 0) {
-            return;
-        }
+        Modal.show({
+            state: {
+                title: '',
+                valid: false,
+            },
+            title: 'Сохранить квитанцию?',
+            body: (state) => (
+                <Input
+                    style={{
+                        fontSize: 16,
+                        color: !state.valid ? colors.danger : colors.dark,
+                        borderBottomWidth: 1,
+                        borderBottomColor: !state.valid ? colors.danger : colors.gray,
+                    }}
+                    disableFullscreenUI
+                    selectTextOnFocus
+                    autoFocus
+                    onChangeText={text => state.set({ title: text, valid: text.length > 2 })}
+                    value={state.title}
+                />
+            ),
+            buttons: (state) => ([
+                {
+                    transparent: true,
+                    close: true,
+                    text: 'Отменить',
+                },
+                {
+                    onPress: async () => {
+                        if (!state.valid) {
+                            return;
+                        }
 
-        this.handleClose();
+                        Modal.hide();
 
-        await dispatch(addReceipt({
-            title: modalInputTitle,
-            products: [...products],
-        }));
+                        await dispatch(addReceipt({
+                            title: state.title,
+                            products: [...products],
+                        }));
 
-        Toast.show({
-            position: 'bottom',
-            text: 'Квитанция сохранена',
-            buttonText: 'Закрыть',
+                        Toast.show({
+                            position: 'bottom',
+                            text: 'Квитанция сохранена',
+                            buttonText: 'Закрыть',
+                        });
+                    },
+                    primary: true,
+                    text: 'Сохранить',
+                },
+            ]),
         });
     }
 
     async handleReset() {
         const { dispatch } = this.props;
 
-        ActionSheet.show(
-            {
-                title: 'Очистить таблицу?',
-                options: ['Очистить', 'Отменить'],
-                destructiveButtonIndex: 0,
-                cancelButtonIndex: 1,
-            },
-            async (buttonIndex) => {
-                if (buttonIndex === 0) {
-                    await dispatch(resetProducts('quantity', 0));
+        Modal.show({
+            title: 'Очистить таблицу?',
+            buttons: () => ([
+                {
+                    transparent: true,
+                    close: true,
+                    text: 'Отменить',
+                },
+                {
+                    onPress: async () => {
+                        await dispatch(resetProducts('quantity', 0));
 
-                    Toast.show({
-                        position: 'bottom',
-                        text: 'Таблица очищена',
-                        buttonText: 'Закрыть',
-                    });
-                }
-            },
-        );
+                        Toast.show({
+                            position: 'bottom',
+                            text: 'Таблица очищена',
+                            buttonText: 'Закрыть',
+                        });
+                    },
+                    primary: true,
+                    close: true,
+                    text: 'Очистить',
+                },
+            ]),
+        });
     }
 
     async handleRemove(product) {
         const { dispatch } = this.props;
 
-        ActionSheet.show(
-            {
-                title: 'Удалить товар?',
-                options: ['Удалить', 'Отменить'],
-                destructiveButtonIndex: 0,
-                cancelButtonIndex: 1,
-            },
-            async (buttonIndex) => {
-                if (buttonIndex === 0) {
-                    await dispatch(removeProduct(product.id));
+        Modal.show({
+            title: 'Удалить товар?',
+            buttons: () => ([
+                {
+                    transparent: true,
+                    close: true,
+                    text: 'Отменить',
+                },
+                {
+                    onPress: async () => {
+                        await dispatch(removeProduct(product.id));
 
-                    Toast.show({
-                        position: 'bottom',
-                        text: 'Товар удален',
-                        buttonText: 'Закрыть',
-                    });
-                }
-            },
-        );
-    }
-
-    async handleClose() {
-        this.setState({
-            modalType: false,
-            modalInputTitle: '',
+                        Toast.show({
+                            position: 'bottom',
+                            text: 'Товар удален',
+                            buttonText: 'Закрыть',
+                        });
+                    },
+                    primary: true,
+                    close: true,
+                    text: 'Удалить',
+                },
+            ]),
         });
     }
 
@@ -136,54 +171,9 @@ class HomeScreen extends Component {
 
     render() {
         const { loading, products, dispatch } = this.props;
-        const { modalType, modalInputTitle } = this.state;
-
-        console.log('HomeScreen:', loading, products);
 
         return (
             <>
-                <Modal
-                    animationIn="fadeIn"
-                    animationOut="fadeOut"
-                    avoidKeyboard
-                    useNativeDriver
-                    isVisible={modalType === 'save'}
-                    onBackButtonPress={() => this.handleClose()}
-                    onBackdropPress={() => this.handleClose()}
-                >
-                    <View style={[styles.mx5, styles.p3, styles.bgWhite, { borderRadius: 5 }]}>
-                        <Title style={[styles.mb2, styles.textLeft, styles.dark]}>
-                            Сохранить квитанцию?
-                        </Title>
-
-                        <Input
-                            style={[styles.mb4, { fontSize: 16, borderBottomWidth: 1, borderBottomColor: colors.gray }]}
-                            disableFullscreenUI
-                            selectTextOnFocus
-                            autoFocus
-                            onChangeText={text => this.setState({ modalInputTitle: text })}
-                            value={modalInputTitle}
-                        />
-
-                        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
-                            <Button
-                                style={styles.mx1}
-                                transparent
-                                onPress={() => this.handleClose()}
-                            >
-                                <Text>Отменить</Text>
-                            </Button>
-                            <Button
-                                style={styles.mx1}
-                                primary
-                                onPress={() => this.handleSave()}
-                            >
-                                <Text>Сохранить</Text>
-                            </Button>
-                        </View>
-                    </View>
-                </Modal>
-
                 <Content>
                     <View style={[styles.bgPrimary, { height: 42, flexDirection: 'row', alignItems: 'center' }]}>
                         <Title style={[styles.flex2, styles.white]}>Название</Title>
@@ -281,7 +271,7 @@ class HomeScreen extends Component {
                             <Button
                                 style={[styles.flex1, { height: 'auto' }]}
                                 full
-                                onPress={() => this.setState({ modalType: 'save' })}
+                                onPress={() => this.handleSave()}
                             >
                                 <Icon style={styles.white} type="MaterialIcons" name="save"/>
                             </Button>

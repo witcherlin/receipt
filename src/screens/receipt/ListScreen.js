@@ -5,26 +5,14 @@ import { connect } from 'react-redux';
 
 import Share from 'react-native-share';
 
-import {
-    ActionSheet,
-    Body,
-    Button,
-    Content,
-    Icon,
-    ListItem,
-    Right,
-    Spinner,
-    Text,
-    Title,
-    Toast,
-    View,
-} from 'native-base';
+import { Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } from 'native-base';
 
 import { loadReceipts, removeReceipt } from '../../actions/receipts';
 
 import List from '../../components/List';
 
 import styles, { colors } from '../../styles';
+import Modal from '../../containers/Modal';
 
 class ListScreen extends Component {
     async handleShare(receipt) {
@@ -45,25 +33,30 @@ class ListScreen extends Component {
     async handleRemove(receipt) {
         const { dispatch } = this.props;
 
-        ActionSheet.show(
-            {
-                title: 'Удалить квитанцию?',
-                options: ['Удалить', 'Отменить'],
-                destructiveButtonIndex: 0,
-                cancelButtonIndex: 1,
-            },
-            async (buttonIndex) => {
-                if (buttonIndex === 0) {
-                    await dispatch(removeReceipt(receipt.id));
+        Modal.show({
+            title: 'Удалить квитанцию?',
+            buttons: () => ([
+                {
+                    transparent: true,
+                    close: true,
+                    text: 'Отменить',
+                },
+                {
+                    onPress: async () => {
+                        await dispatch(removeReceipt(receipt.id));
 
-                    Toast.show({
-                        position: 'bottom',
-                        text: 'Квитанция удалена',
-                        buttonText: 'Закрыть',
-                    });
-                }
-            },
-        );
+                        Toast.show({
+                            position: 'bottom',
+                            text: 'Квитанция удалена',
+                            buttonText: 'Закрыть',
+                        });
+                    },
+                    primary: true,
+                    close: true,
+                    text: 'Удалить',
+                },
+            ]),
+        });
     }
 
     componentDidMount() {
@@ -72,8 +65,6 @@ class ListScreen extends Component {
 
     render() {
         const { navigation, loading, receipts } = this.props;
-
-        console.log('ListScreen:', loading, receipts);
 
         return (
             <>
@@ -107,24 +98,24 @@ class ListScreen extends Component {
                                     <ListItem
                                         style={[
                                             styles.m0,
-                                            styles.pr3,
+                                            styles.p3,
                                             {
                                                 height: 50,
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
                                                 borderBottomWidth: 1,
                                                 borderBottomColor: colors.gray,
                                             },
                                         ]}
                                         button
-                                        onPress={() => navigation.navigate('Detail', { receipt })}
+                                        onPress={() => navigation.navigate('Detail', { id: receipt.id })}
                                     >
-                                        <Body>
-                                            <Text>{receipt.title}</Text>
-                                        </Body>
-                                        <Right>
-                                            <Text style={styles.textRight} note>
-                                                {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
-                                            </Text>
-                                        </Right>
+                                        <Text>{receipt.title}</Text>
+
+                                        <Text style={styles.textRight} note>
+                                            {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
+                                        </Text>
                                     </ListItem>
                                 )}
                                 right={receipt => (

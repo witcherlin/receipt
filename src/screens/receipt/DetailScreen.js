@@ -1,17 +1,30 @@
 import moment from 'moment';
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import { Button, Content, Icon, Text, Title, View } from 'native-base';
 
-import styles from '../../styles';
+import { updateReceipt } from '../../actions/receipts';
 
-export default class DetailScreen extends Component {
+import Input from '../../components/Input';
+
+import styles, { colors } from '../../styles';
+
+class DetailScreen extends Component {
+    computeTotal() {
+        const { receipt } = this.props;
+
+        return receipt.products.reduce((total, product) => (total + (product.quantity * product.price)), 0);
+    }
+
     render() {
-        const { navigation } = this.props;
-        const { receipt } = navigation.state.params;
+        const { navigation, receipt, dispatch } = this.props;
 
-        console.log('DetailScreen:', navigation, receipt);
+        if (!receipt) {
+            navigation.goBack();
+            return;
+        }
 
         return (
             <>
@@ -23,21 +36,150 @@ export default class DetailScreen extends Component {
                         <Icon style={styles.white} name="arrow-back"/>
                     </Button>
 
-                    <Title style={[styles.p0, styles.white]}>#{receipt.id}</Title>
+                    <Title style={[styles.p0, styles.white]}>{receipt.title}</Title>
 
                     <Button transparent>
                         <Icon style={styles.white} name="share"/>
                     </Button>
                 </View>
 
-                <Content padder>
-                    <Text>#{receipt.id}</Text>
-                    <Text>{receipt.title}</Text>
-                    <Text note>
-                        {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
-                    </Text>
+                <Content>
+                    <View style={[styles.my3, { alignItems: 'center' }]}>
+                        <Text>Квитанция #{receipt.id}</Text>
+                        <Input
+                            style={[
+                                styles.mb2,
+                                {
+                                    fontSize: 16,
+                                    fontWeight: 'bold',
+                                    borderBottomWidth: 1,
+                                    borderBottomColor: colors.gray,
+                                },
+                            ]}
+                            disableFullscreenUI
+                            selectTextOnFocus
+                            onChangeText={text => dispatch(updateReceipt(receipt.id, { title: text }))}
+                            value={receipt.title}
+                        />
+                        <Text note>
+                            {moment(receipt.createdAt).format('DD.MM.YYYY HH:mm')}
+                        </Text>
+                    </View>
+
+                    <View style={styles.mb3}>
+                        <View style={[styles.bgPrimary, { height: 42, flexDirection: 'row', alignItems: 'center' }]}>
+                            <Title style={[{ flex: 2.25 }, styles.white]}>Название</Title>
+                            <Title style={[{ flex: 1 }, styles.white]}>Кол.</Title>
+                            <Title style={[{ flex: 1.25 }, styles.white]}>Цена</Title>
+                            <Title style={[{ flex: 2 }, styles.white]}>Сумма</Title>
+                        </View>
+
+                        {receipt.products.map((product, idx) => (
+                            <View key={idx} style={{
+                                height: 50,
+                                flexDirection: 'row',
+                                borderBottomWidth: 1,
+                                borderBottomColor: colors.gray,
+                            }}>
+                                <View style={[
+                                    {
+                                        flex: 2.25,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRightWidth: 1,
+                                        borderColor: colors.gray,
+                                    },
+                                ]}>
+                                    <Text style={[{ fontSize: 16 }]}>
+                                        {product.title}
+                                    </Text>
+                                </View>
+                                <View style={[
+                                    {
+                                        flex: 1,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRightWidth: 1,
+                                        borderColor: colors.gray,
+                                    },
+                                ]}>
+                                    <Text style={[{ fontSize: 16 }]}>
+                                        {product.quantity} шт
+                                    </Text>
+                                </View>
+                                <View style={[
+                                    {
+                                        flex: 1.25,
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRightWidth: 1,
+                                        borderColor: colors.gray,
+                                    },
+                                ]}>
+                                    <Text style={[{ fontSize: 16 }]}>
+                                        {product.price} грн
+                                    </Text>
+                                </View>
+                                <View style={[{ flex: 2, alignItems: 'center', justifyContent: 'center' }]}>
+                                    <Text style={[{ fontSize: 16 }]}>
+                                        {(product.quantity * product.price).toFixed(2)} грн
+                                    </Text>
+                                </View>
+                            </View>
+                        ))}
+
+                        <View style={{
+                            height: 50,
+                            flexDirection: 'row',
+                        }}>
+                            <View style={{ flex: 2.25 }}/>
+                            <View style={{ flex: 1 }}/>
+                            <View style={[
+                                { flex: 1.25 },
+                                {
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderLeftWidth: 1,
+                                    borderBottomWidth: 1,
+                                    borderColor: colors.gray,
+                                },
+                            ]}>
+                                <Text style={[styles.fontBold, { fontSize: 16 }]}>
+                                    Итого:
+                                </Text>
+                            </View>
+                            <View style={[
+                                { flex: 2 },
+                                {
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderLeftWidth: 1,
+                                    borderBottomWidth: 1,
+                                    borderColor: colors.gray,
+                                },
+                            ]}>
+                                <Text style={[styles.fontBold, { fontSize: 16 }]}>
+                                    {this.computeTotal().toFixed(2)} грн
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+
+                    <Button style={styles.mb3} full danger>
+                        <Text>Удалить квитанцию</Text>
+                    </Button>
                 </Content>
             </>
         );
     }
 }
+
+export default connect(
+    (state, props) => {
+        const { navigation: { state: { params } } } = props;
+
+        return {
+            receipt: state.receipts.receipts.find(receipt => receipt.id === params.id),
+        };
+    },
+)(DetailScreen);

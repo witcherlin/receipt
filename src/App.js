@@ -5,6 +5,7 @@ import { createAppContainer, createDrawerNavigator, createStackNavigator } from 
 import { Container, Content, Root, Text, Title, View } from 'native-base';
 
 import Drawer from './containers/Drawer';
+import Modal from './containers/Modal';
 
 import HomeScreen from './screens/HomeScreen';
 import ListScreen from './screens/receipt/ListScreen';
@@ -60,6 +61,8 @@ class App extends Component {
             <Root>
                 <Container>
                     <AppContainer/>
+
+                    <Modal ref={ref => (Modal.instance = ref)}/>
                 </Container>
             </Root>
         );
