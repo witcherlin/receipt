@@ -25,13 +25,9 @@ export function setProducts(products) {
 
 export function loadProducts() {
     return async (dispatch) => {
-        dispatch(setLoading(true));
-
         const products = JSON.parse(await AsyncStorage.getItem('@receipt/products')) || [];
 
         dispatch(setProducts(products));
-
-        setTimeout(() => dispatch(setLoading(false)), 500);
     };
 }
 

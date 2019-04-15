@@ -8,7 +8,7 @@ import {
 } from '../actions/products';
 
 const initialState = {
-    loading: true,
+    loading: false,
     products: [],
     updatedAt: Date.now(),
     createdAt: Date.now(),

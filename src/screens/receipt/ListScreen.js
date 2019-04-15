@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } from 'native-base';
 
-import { loadReceipts, removeReceipt } from '../../actions/receipts';
+import { removeReceipt } from '../../actions/receipts';
 
 import { getReceipts } from '../../selectors/receipts';
 
@@ -43,10 +43,6 @@ class ListScreen extends Component {
         });
     }
 
-    componentDidMount() {
-        this.props.dispatch(loadReceipts());
-    }
-
     render() {
         const { navigation, loading, receipts } = this.props;
 
@@ -67,9 +63,7 @@ class ListScreen extends Component {
 
                     <Title style={[styles.p0, styles.white]}>Квитанции</Title>
 
-                    <Button transparent>
-                        <Icon style={styles.white} name="share"/>
-                    </Button>
+                    <View/>
                 </View>
 
                 <Content>

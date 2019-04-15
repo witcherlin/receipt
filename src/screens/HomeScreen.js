@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { Button, Content, Icon, ListItem, Spinner, Text, Title, Toast, View } from 'native-base';
 
-import { addProduct, loadProducts, removeProduct, resetProducts, updateProduct } from '../actions/products';
+import { addProduct, removeProduct, resetProducts, updateProduct } from '../actions/products';
 import { addReceipt } from '../actions/receipts';
 
 import { getProducts, getProductsTotal } from '../selectors/products';
@@ -166,10 +166,6 @@ class HomeScreen extends Component {
                 },
             ]),
         });
-    }
-
-    componentDidMount() {
-        this.props.dispatch(loadProducts());
     }
 
     render() {

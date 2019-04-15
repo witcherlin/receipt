@@ -25,13 +25,9 @@ export function setReceipts(receipts) {
 
 export function loadReceipts() {
     return async (dispatch) => {
-        dispatch(setLoading(true));
-
         const receipts = JSON.parse(await AsyncStorage.getItem('@receipt/receipts')) || [];
 
         dispatch(setReceipts(receipts));
-
-        setTimeout(() => dispatch(setLoading(false)), 500);
     };
 }
 

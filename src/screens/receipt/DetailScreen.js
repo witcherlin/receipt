@@ -23,7 +23,7 @@ class DetailScreen extends Component {
         await Share.open({
             title: `Квитанция #${receipt.id} - ${receipt.title}`,
             subject: `Квитанция #${receipt.id} - ${receipt.title}`,
-            message: [`#${receipt.id}`, receipt.title, receipt.createdAt].join('\n') + '\n',
+            message: [`#${receipt.id}`, receipt.title, receipt.createdAt].join('\n'),
             url: `data:image/png;base64,${uri}`,
             failOnCancel: false,
             showAppsToView: true,
